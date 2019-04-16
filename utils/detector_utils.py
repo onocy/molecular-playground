@@ -58,9 +58,9 @@ def draw_box_on_image(num_hands_detect, score_thresh, scores, boxes, im_width, i
             p1 = (int(left), int(top))
             p2 = (int(right), int(bottom))
             cv2.rectangle(image_np, p1, p2, (77, 255, 9), 3, 1)
-            mid_x = (p1[0] + p2[0]) / 2
-            mid_y = (p1[1] + p2[1]) / 2
-            cv2.circle(image_np, mid_x, mid_y, (77, 255, 9))
+            mid_x = int((p1[0] + p2[0]) / 2)
+            mid_y = int((p1[1] + p2[1]) / 2)
+            cv2.circle(image_np, (mid_x, mid_y), 2, (77, 255, 9))
             midpoint_list.append((mid_x, mid_y))
 
 
