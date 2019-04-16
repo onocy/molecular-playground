@@ -1,7 +1,12 @@
-Adapted from Victor Dibia, Real-time Hand-Detection using Neural Networks (SSD) on Tensorflow, (2017), GitHub repository, https://github.com/victordibia/handtracking
+# Molecular Playground Local Python Server
+
+- Adapted from Victor Dibia, Real-time Hand-Detection using Neural Networks (SSD) on Tensorflow, (2017), GitHub repository, https://github.com/victordibia/handtracking
 
 
-'''
+### Notes
+---
+
+```(javascript)
 predictions: 
 [{
 bbox: [x, y, width, height],
@@ -24,5 +29,4 @@ __proto__: Array(0)
             x.innerText = predictions[0].bbox[0].toFixed(2);
             y.innerText = predictions[0].bbox[1].toFixed(2);
         }
-
-'''
+```
