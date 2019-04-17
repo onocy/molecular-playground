@@ -178,18 +178,13 @@ if __name__ == '__main__':
                         cv2.imshow('Multi-Threaded Detection', output_frame)
 
                         midpoint_data = midpoint_q.get()
-                        print(midpoint_data)
-                        print(1)
                         if (len(midpoint_data) > 0): 
                             delta_x = 0
                             delta_y = 0
-                            print(2)
                             if prev_x != 0 and prev_y != 0: 
-                                print(3)
                                 delta_x = abs(midpoint_data[0][0] - prev_x)
                                 delta_y = abs(midpoint_data[0][1] - prev_y)
                                 if delta_x < delta_thresh and delta_y < delta_thresh:
-                                    print(4)
                                     body = {}
                                     body['type'] = 'move'
                                     body['style'] = 'rotate'
