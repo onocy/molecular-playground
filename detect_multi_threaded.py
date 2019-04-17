@@ -8,9 +8,16 @@ from utils.detector_utils import WebcamVideoStream
 import datetime
 import argparse
 import socket
+import json
 
 frame_processed = 0
 score_thresh = 0.2
+
+# Change thresh amount to adjust rotational smoothing
+delta_thresh = 20
+prev_x = 0
+prev_y = 0
+
 
 HOST = '127.0.0.1'
 PORT = 65432
@@ -24,7 +31,7 @@ def worker(input_q, output_q, cap_params, frame_processed, midpoint_q):
     detection_graph, sess = detector_utils.load_inference_graph()
     sess = tf.Session(graph=detection_graph)
     while True:
-        print("> ===== in worker loop, frame ", frame_processed)
+        # print("> ===== in worker loop, frame ", frame_processed)
         frame = input_q.get()
         if (frame is not None):
             # Actual detection. Variable boxes contains the bounding box cordinates for hands detected,
@@ -125,7 +132,7 @@ if __name__ == '__main__':
     # max number of hands we want to detect/track
     cap_params['num_hands_detect'] = args.num_hands
 
-    print(cap_params, args)
+    # print(cap_params, args)
 
     # spin up workers to paralleize detection.
     pool = Pool(args.num_workers, worker,
@@ -146,6 +153,9 @@ if __name__ == '__main__':
         conn, addr = s.accept()
         with conn: 
             print('Connected by: ', addr)
+            # TODO send initial socket initialization JSON element
+            conn.send(bytes(str({"magic" : "JmolApp", "role" : "out"}), 'utf-8'))
+
             while True:
                 frame = video_capture.read()
                 frame = cv2.flip(frame, 1)
@@ -153,14 +163,12 @@ if __name__ == '__main__':
 
                 input_q.put(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
                 output_frame = output_q.get()
-                midpoint_data = midpoint_q.get()
-
                 output_frame = cv2.cvtColor(output_frame, cv2.COLOR_RGB2BGR)
 
                 elapsed_time = (datetime.datetime.now() - start_time).total_seconds()
                 num_frames += 1
                 fps = num_frames / elapsed_time
-                print("frame ",  index, num_frames, elapsed_time, fps)
+                # print("frame ",  index, num_frames, elapsed_time, fps)
 
                 if (output_frame is not None):
                     if (args.display > 0):
@@ -168,9 +176,33 @@ if __name__ == '__main__':
                             detector_utils.draw_fps_on_image("FPS : " + str(int(fps)),
                                                             output_frame)
                         cv2.imshow('Multi-Threaded Detection', output_frame)
-                        # TODO Adjust to be in proper serialized form
-                        if (midpoint_data is not None): 
-                            conn.sendall(bytes(str(midpoint_data), 'utf-8'))
+
+                        midpoint_data = midpoint_q.get()
+                        print(midpoint_data)
+                        print(1)
+                        if (len(midpoint_data) > 0): 
+                            delta_x = 0
+                            delta_y = 0
+                            print(2)
+                            if prev_x != 0 and prev_y != 0: 
+                                print(3)
+                                delta_x = abs(midpoint_data[0][0] - prev_x)
+                                delta_y = abs(midpoint_data[0][1] - prev_y)
+                                if delta_x < delta_thresh and delta_y < delta_thresh:
+                                    print(4)
+                                    body = {}
+                                    body['type'] = 'move'
+                                    body['style'] = 'rotate'
+                                    body['x'] = delta_x
+                                    body['y'] = delta_y
+                                    print(body)
+                                    conn.sendall(bytes(json.dumps(body), 'utf-8'))
+
+                            prev_x = midpoint_data[0][0]
+                            prev_y = midpoint_data[0][1]
+                            print('px: ', prev_x)
+                            print('py:', prev_y)
+                        
                         if cv2.waitKey(1) & 0xFF == ord('q'):
                             break
                     else:
