@@ -2,31 +2,41 @@
 
 - Adapted from Victor Dibia, Real-time Hand-Detection using Neural Networks (SSD) on Tensorflow, (2017), GitHub repository, https://github.com/victordibia/handtracking
 
+### To Run
 
-### Notes
+> Make sure that you have python >3.6 installed ([install here](https://www.python.org/downloads/))
+
+1.  Clone the repository
+
+`git clone <url>`
+
+2. Run the detection script (Note: this should take several seconds, as the NN graph is loaded and the workers begin)
+
+
+`python detect_mult_threaded.py`
+
+3. Run the 'client', which currently serves as a placeholder for the JMOL application.
+
+`python test_client.py`
+
 ---
 
+*Current Output:*
+
 ```(javascript)
-predictions: 
-[{
-bbox: [x, y, width, height],
-class: "hand",
-score: 0.8380282521247864
-}, {
-bbox: [x, y, width, height],
-class: "hand",
-score: 0.74644153267145157
-}]
-
-[{…}]
-0: {bbox: Array(4), class: 0, score: 0.9765641689300537}
-length: 1
-__proto__: Array(0)
-
-
- console.log("Predictions: ", predictions);
-        if (predictions.length > 0) {
-            x.innerText = predictions[0].bbox[0].toFixed(2);
-            y.innerText = predictions[0].bbox[1].toFixed(2);
-        }
+{'magic': 'JmolApp', 'role': 'out'}
+{"type": "move", "style": "rotate", "x": 1, "y": 10}
+{"type": "move", "style": "rotate", "x": 18, "y": 12}
+{"type": "move", "style": "rotate", "x": 5, "y": 7}
+{"type": "move", "style": "rotate", "x": 7, "y": 4}
+{"type": "move", "style": "rotate", "x": 10, "y": 8}
+{"type": "move", "style": "rotate", "x": 11, "y": 4}
+{"type": "move", "style": "rotate", "x": 11, "y": 2}
+{"type": "move", "style": "rotate", "x": 14, "y": 4}
+{"type": "move", "style": "rotate", "x": 3, "y": 3}
+{"type": "move", "style": "rotate", "x": 14, "y": 2}
+{"type": "move", "style": "rotate", "x": 9, "y": 2}
+{"type": "move", "style": "rotate", "x": 18, "y": 2}
+...
+...
 ```
