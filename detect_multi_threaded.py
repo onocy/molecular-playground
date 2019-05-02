@@ -18,13 +18,11 @@ delta_thresh = 20
 prev_x = 0
 prev_y = 0
 
-
 HOST = '127.0.0.1'
-PORT = 65432
+PORT = 31416
 
 # Create a worker thread that loads graph and
 # does detection on images in an input queue and puts it on an output queue
-
 
 def worker(input_q, output_q, cap_params, frame_processed, midpoint_q):
     print(">> loading frozen model for worker")
@@ -124,8 +122,8 @@ if __name__ == '__main__':
     video_capture = WebcamVideoStream(
         src=args.video_source, width=args.width, height=args.height).start()
 
-    cap_params = {}
     frame_processed = 0
+    cap_params = {}
     cap_params['im_width'], cap_params['im_height'] = video_capture.size()
     cap_params['score_thresh'] = score_thresh
 
@@ -153,7 +151,7 @@ if __name__ == '__main__':
         conn, addr = s.accept()
         with conn: 
             print('Connected by: ', addr)
-            # TODO send initial socket initialization JSON element
+            # TODO send initial socket initialization JSON element (test if works)
             conn.send(bytes(str({"magic" : "JmolApp", "role" : "out"}), 'utf-8'))
 
             while True:
@@ -170,6 +168,27 @@ if __name__ == '__main__':
                 fps = num_frames / elapsed_time
                 # print("frame ",  index, num_frames, elapsed_time, fps)
 
+                midpoint_data = midpoint_q.get()
+                if (len(midpoint_data) > 0): 
+                    delta_x = 0
+                    delta_y = 0
+                    if prev_x != 0 and prev_y != 0: 
+                        delta_x = midpoint_data[0][0] - prev_x
+                        delta_y = midpoint_data[0][1] - prev_y
+                        if delta_x < delta_thresh and delta_y < delta_thresh:
+                            body = {}
+                            body['type'] = 'move'
+                            body['style'] = 'rotate'
+                            body['x'] = delta_x
+                            body['y'] = delta_y
+                            print(body)
+                            conn.sendall(bytes(json.dumps(body) + '/n', 'utf-8'))
+                    prev_x = midpoint_data[0][0]
+                    prev_y = midpoint_data[0][1]
+                    print('px: ', prev_x)
+                    print('py:', prev_y)
+                
+                # Display
                 if (output_frame is not None):
                     if (args.display > 0):
                         if (args.fps > 0):
@@ -177,26 +196,6 @@ if __name__ == '__main__':
                                                             output_frame)
                         cv2.imshow('Multi-Threaded Detection', output_frame)
 
-                        midpoint_data = midpoint_q.get()
-                        if (len(midpoint_data) > 0): 
-                            delta_x = 0
-                            delta_y = 0
-                            if prev_x != 0 and prev_y != 0: 
-                                delta_x = abs(midpoint_data[0][0] - prev_x)
-                                delta_y = abs(midpoint_data[0][1] - prev_y)
-                                if delta_x < delta_thresh and delta_y < delta_thresh:
-                                    body = {}
-                                    body['type'] = 'move'
-                                    body['style'] = 'rotate'
-                                    body['x'] = delta_x
-                                    body['y'] = delta_y
-                                    print(body)
-                                    conn.sendall(bytes(json.dumps(body), 'utf-8'))
-                            prev_x = midpoint_data[0][0]
-                            prev_y = midpoint_data[0][1]
-                            print('px: ', prev_x)
-                            print('py:', prev_y)
-                        
                         if cv2.waitKey(1) & 0xFF == ord('q'):
                             break
                     else:
@@ -206,9 +205,9 @@ if __name__ == '__main__':
                         else:
                             print("frames processed: ", index, "elapsed time: ",
                                 elapsed_time, "fps: ", str(int(fps)))
-                else:
-                    # print("video end")
-                    break
+                # else:
+                #     print("video end")
+                #     break
     elapsed_time = (datetime.datetime.now() - start_time).total_seconds()
     fps = num_frames / elapsed_time
     print("fps", fps)
