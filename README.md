@@ -20,6 +20,9 @@
 `python test_client.py`
 
 ---
+![motion](assets/motion.gif)
+
+---
 
 *Current Output:*
 
