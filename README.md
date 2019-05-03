@@ -20,6 +20,9 @@
 `java -jar MPJmolApp.jar`
 
 ---
+![motion](assets/motion.gif)
+
+---
 
 *Current Output:*
 
