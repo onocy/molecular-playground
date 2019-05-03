@@ -182,7 +182,7 @@ if __name__ == '__main__':
                             body['x'] = delta_x
                             body['y'] = delta_y
                             print(body)
-                            conn.sendall(bytes(json.dumps(body) + '/n', 'utf-8'))
+                            conn.sendall(bytes(json.dumps(body) + '\n', 'utf-8'))
                     prev_x = midpoint_data[0][0]
                     prev_y = midpoint_data[0][1]
                     print('px: ', prev_x)

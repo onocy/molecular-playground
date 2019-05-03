@@ -4,7 +4,7 @@
 
 ### To Run
 
-> Make sure that you have python >3.6 installed ([install here](https://www.python.org/downloads/))
+> Make sure that you have python >3.6 installed ([install here], as well as Java.(https://www.python.org/downloads/))
 
 1.  Clone the repository
 
@@ -15,9 +15,9 @@
 
 `python detect_mult_threaded.py`
 
-3. Run the 'client', which currently serves as a placeholder for the JMOL application.
+1. Run the local JMOL molecule.
 
-`python test_client.py`
+`java -jar MPJmolApp.jar`
 
 ---
 
