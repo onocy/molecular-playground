@@ -3,7 +3,7 @@ import json
 import base64
 
 HOST = '127.0.0.1' 
-PORT = 65432     
+PORT = 31416     
 
 with socket.socket() as s:
     s.connect((HOST, PORT))
