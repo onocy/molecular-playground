@@ -14,7 +14,7 @@ frame_processed = 0
 score_thresh = 0.2
 
 # Change thresh amount to adjust smoothing of ROTATE command
-delta_thresh = 30
+delta_thresh = 200
 prev_x = 0
 prev_y = 0
 
@@ -27,7 +27,6 @@ PORT = 31416
 def worker(input_q, output_q, midpoint_q, cap_params, frame_processed):
     print(">> loading frozen model for worker")
     detection_graph, sess = detector_utils.load_inference_graph()
-    sess = tf.Session(graph=detection_graph)
     while True:
         # print("> ===== in worker loop, frame ", frame_processed)
         frame = input_q.get()
@@ -41,6 +40,9 @@ def worker(input_q, output_q, midpoint_q, cap_params, frame_processed):
                 frame, 
                 detection_graph, 
                 sess)
+            # print('boxes', boxes)
+            # print('scores', scores)
+            
             # draw bounding boxes
             detector_utils.draw_box_on_image(
                 cap_params['num_hands_detect'], 
@@ -50,6 +52,7 @@ def worker(input_q, output_q, midpoint_q, cap_params, frame_processed):
                 cap_params['im_height'], 
                 frame, 
                 midpoint_list)
+
             # add frame annotated with bounding box to queue
             output_q.put(frame)
             print('Midpoint List', midpoint_list)
@@ -134,6 +137,18 @@ def default_args():
         type=int,
         default=5,
         help='Size of the queue.')
+    parser.add_argument('-flip-x-axis', 
+        '--flip-x', 
+        dest='flip_x',
+        type=int, 
+        default=0, 
+        help='Flip X axis if camera facing installation')
+    parser.add_argument('-flip-y-axis', 
+    '--flip-y', 
+    dest='flip_y',
+    type=int, 
+    default=0, 
+    help='Flip Y axis if camera upside down')
     return parser.parse_args()
 
 if __name__ == '__main__':
@@ -190,6 +205,10 @@ if __name__ == '__main__':
                     if prev_x != 0 and prev_y != 0: 
                         delta_x = midpoint_data[0][0] - prev_x
                         delta_y = midpoint_data[0][1] - prev_y
+                        if(args.flip_x):
+                            delta_x *= -1
+                        if(args.flip_y): 
+                            delta_y *= -1
                         if abs(delta_x) < delta_thresh and abs(delta_y) < delta_thresh:
                             send_message('rotate', delta_x, delta_y)
                     prev_x = midpoint_data[0][0]

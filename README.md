@@ -6,12 +6,11 @@
 
 > Make sure that you have python >3.6 installed ([install here], as well as Java.(https://www.python.org/downloads/))
 
-1.  Clone the repository
+1. Clone the repository
 
 `git clone <url>`
 
 2. Run the detection script (Note: this should take several seconds, as the NN graph is loaded and the workers begin)
-
 
 `python detect_mult_threaded.py`
 
@@ -22,24 +21,14 @@
 ---
 ![motion](assets/motion.gif)
 
----
+### Script Options
 
-*Current Output:*
+* `-src` : video source, default = 0
+* `-nhands` : number of hands, default = 2
+* `-fps` : show frames per second: default = 1 [yes]
+* `-display` : show output for display: default = 1 [yes]
+* `-num-w` : number of workers for processing: default = 4
+* `-flip-x-axis`: flip x axis if camera facing installation: default = 0 [no]
+* `-flip-y-axis`: flip y axis if camera facing installation: default = 0 [no]
 
-```(javascript)
-{'magic': 'JmolApp', 'role': 'out'}
-{"type": "move", "style": "rotate", "x": 1, "y": 10}
-{"type": "move", "style": "rotate", "x": 18, "y": 12}
-{"type": "move", "style": "rotate", "x": 5, "y": 7}
-{"type": "move", "style": "rotate", "x": 7, "y": 4}
-{"type": "move", "style": "rotate", "x": 10, "y": 8}
-{"type": "move", "style": "rotate", "x": 11, "y": 4}
-{"type": "move", "style": "rotate", "x": 11, "y": 2}
-{"type": "move", "style": "rotate", "x": 14, "y": 4}
-{"type": "move", "style": "rotate", "x": 3, "y": 3}
-{"type": "move", "style": "rotate", "x": 14, "y": 2}
-{"type": "move", "style": "rotate", "x": 9, "y": 2}
-{"type": "move", "style": "rotate", "x": 18, "y": 2}
-...
-...
-```
+> example: python detect_multi_threaded.py -nhands 1 -fps 1 -ds 1 -num-w 5

@@ -25,7 +25,7 @@ PATH_TO_LABELS = os.path.join(MODEL_NAME, 'hand_label_map.pbtxt')
 NUM_CLASSES = 1
 # load label map
 label_map = label_map_util.load_labelmap(PATH_TO_LABELS)
-categories = label_map_util.convert_label_map_to_categories(label_map, 
+categories = label_map_util.convert_label_map_to_categories(label_map,
                                                             max_num_classes=NUM_CLASSES,
                                                             use_display_name=True)
 category_index = label_map_util.create_category_index(categories)
@@ -52,10 +52,10 @@ def load_inference_graph():
 def draw_box_on_image(num_hands_detect, score_thresh, scores, boxes, im_width, im_height, image_np, midpoint_list):
     for i in range(num_hands_detect):
         if (scores[i] > score_thresh):
-            (left, right, top, bottom) = (boxes[i][1] * im_width, 
-                                        boxes[i][3] * im_width,
-                                        boxes[i][0] * im_height, 
-                                        boxes[i][2] * im_height)
+            (left, right, top, bottom) = (boxes[i][1] * im_width,
+                                          boxes[i][3] * im_width,
+                                          boxes[i][0] * im_height,
+                                          boxes[i][2] * im_height)
             p1 = (int(left), int(top))
             p2 = (int(right), int(bottom))
             cv2.rectangle(image_np, p1, p2, (77, 255, 9), 3, 1)
@@ -67,13 +67,13 @@ def draw_box_on_image(num_hands_detect, score_thresh, scores, boxes, im_width, i
 
 # Show fps value on image.
 def draw_fps_on_image(fps, image_np):
-    cv2.putText(image_np, 
-            fps, 
-            (20, 50),
-            cv2.FONT_HERSHEY_SIMPLEX, 
-            0.75, 
-            (77, 255, 9),
-            2)
+    cv2.putText(image_np,
+                fps,
+                (20, 50),
+                cv2.FONT_HERSHEY_SIMPLEX,
+                0.75,
+                (77, 255, 9),
+                2)
 
 
 # Actual detection ... generate scores and bounding boxes given an image
@@ -85,13 +85,14 @@ def detect_objects(image_np, detection_graph, sess):
     # Each score represent how level of confidence for each of the objects.
     # Score is shown on the result image, together with the class label.
     detection_scores = detection_graph.get_tensor_by_name('detection_scores:0')
-    detection_classes = detection_graph.get_tensor_by_name('detection_classes:0')
+    detection_classes = detection_graph.get_tensor_by_name(
+        'detection_classes:0')
     num_detections = detection_graph.get_tensor_by_name('num_detections:0')
 
     image_np_expanded = np.expand_dims(image_np, axis=0)
 
-    (boxes, scores, classes, num) = sess.run([detection_boxes, detection_scores,detection_classes, num_detections],
-                                            feed_dict={image_tensor: image_np_expanded})
+    (boxes, scores, classes, num) = sess.run([detection_boxes, detection_scores, detection_classes, num_detections],
+                                             feed_dict={image_tensor: image_np_expanded})
     return np.squeeze(boxes), np.squeeze(scores)
 
 
