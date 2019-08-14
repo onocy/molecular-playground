@@ -1,4 +1,6 @@
-# Molecular Playground Local Python Server
+# Molecular Playground 
+
+Local Python Server
 
 - Adapted from Victor Dibia, Real-time Hand-Detection using Neural Networks (SSD) on Tensorflow, (2017), GitHub repository, https://github.com/victordibia/handtracking
 
