@@ -2,7 +2,9 @@ from utils import detector_utils as detector_utils
 from multiprocessing import Queue, Pool
 from utils.detector_utils import WebcamVideoStream
 import cv2
-import tensorflow as tf
+#import tensorflow as tf
+import tensorflow.compat.v1 as tf
+tf.disable_v2_behavior()
 import multiprocessing
 import time
 import datetime
